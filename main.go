@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 )
 
@@ -10,6 +11,7 @@ type User struct {
 	Age                  uint16
 	Money                int16
 	AvgGrades, Happiness float64
+	Hobbies              []string
 }
 
 func (u *User) getAllInfo() string {
@@ -17,9 +19,13 @@ func (u *User) getAllInfo() string {
 }
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
-	bob := User{Name: "Bob", Age: 22, Money: -50, AvgGrades: 4.2, Happiness: 0.8}
-	bob.setNewName("Alex")
-	fmt.Fprintf(w, bob.getAllInfo())
+	bob := User{Name: "Bob", Age: 22, Money: -50, AvgGrades: 4.2, Happiness: 0.8, Hobbies: []string{"Football", "Skate"}}
+	tmpl, err := template.ParseFiles("gosha_dydar/templates/home_page.html")
+	if err != nil {
+		fmt.Fprintf(w, err.Error())
+		return
+	}
+	tmpl.Execute(w, bob)
 }
 
 func (u *User) setNewName(newName string) {
